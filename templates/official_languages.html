@@ -36,10 +36,10 @@
             </tr>
         </thead>
         <tbody>
-            {% for lang, count in languages %}
+            {% for row in results %}
             <tr>
-                <td>{{ lang }}</td>
-                <td>{{ count }}</td>
+                <td>{{ row.Language }}</td>
+                <td>{{ row.Count }}</td>
             </tr>
             {% endfor %}
         </tbody>
