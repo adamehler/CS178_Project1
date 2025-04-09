@@ -37,10 +37,11 @@ def get_most_pop_off_lang():
     return execute_query(query)
 
 def user_add(name, countries):
-    table.put_item{
+    table.put_item(
+        Item={
         'User': name,
         'CountriesVisited': countries
-    }
+    })
 
 
 def user_delete(name):
