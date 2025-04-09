@@ -33,7 +33,7 @@ def execute_query(query, args=()):
 
 def get_most_pop_off_lang():
     #Returns the 20 most popular official languages in the world in descending order
-    query = "select Language, count(Language) FROM countrylanguage WHERE IsOfficial LIKE 'T' GROUP BY Language ORDER BY count(Language) DESC LIMIT 20;"
+    query = "select Language, count(Language) AS count FROM countrylanguage WHERE IsOfficial LIKE 'T' GROUP BY Language ORDER BY count(Language) DESC LIMIT 20;"
     return execute_query(query)
 
 def user_add(name, countries):
