@@ -41,3 +41,18 @@ def user_add(name, countries):
         'User': name,
         'CountriesVisited': countries
     }
+
+
+def user_delete(name):
+    try:
+        response = table.get_item(Key={"Name": name})
+        if 'Item' not in response:
+            print("This user is not in the database.")
+        else:
+            table.delete_item(
+                Key={
+                'User': name,
+                }
+                )
+    except Exception as e:
+        print("error in deleting user", {str(e)})
