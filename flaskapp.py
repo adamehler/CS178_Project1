@@ -38,7 +38,7 @@ def delete_user():
     if request.method == 'POST':
         # Extract form data
         name = request.form['name']
-        user_delete(name)        
+        user_delete(name)
         flash('User deleted successfully!', 'warning')  # 'success' is a category; makes a green banner at the top
         # Redirect to home page or another page upon successful submission
         return redirect(url_for('home'))
