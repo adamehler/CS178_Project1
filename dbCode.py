@@ -3,7 +3,7 @@ import pymysql.cursors
 import creds
 import boto3
 
-TABLE_NAME = "Soccer"
+TABLE_NAME = "projectone"
 
 dynamodb = boto3.resource('dynamodb', region_name="us-east-1")
 table = dynamodb.Table(TABLE_NAME)

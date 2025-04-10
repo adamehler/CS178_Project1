@@ -10,7 +10,7 @@ app.secret_key = 'your_secret_key' #This came from the example flaskapp.py in cl
 #Home page
 
 @app.route("/")
-def index():
+def home():
     #Get the top 20 most common official languages
     languages = get_most_pop_off_lang()
     #Utilize the template to render the page
@@ -22,11 +22,10 @@ def add_user():
         # Extract form data
         username = request.form['username']
         countriesVisited = request.form['countriesVisited']
-        user_add(username, countriesVisited)
+        user_add(username, countriesVisited) #use dbCode add to add to NoSQL
 
         
         # Process the data (e.g., add it to a database)
-        # For now, let's just print it to the console
         flash('User added successfully!', 'success')  # 'success' is a category; makes a green banner at the top
         # Redirect to home page or another page upon successful submission
         return redirect(url_for('home'))
