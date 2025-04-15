@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import pymysql
 import creds
+from flask import jsonify
 from dbCode import * #helper functions from dbCode
 
 
@@ -43,6 +44,23 @@ def delete_user():
         return render_template('delete_user.html', users=users)
 
 
+@app.route('/get-user-countries', methods=['POST'])
+def get_user_countries():
+    username = request.form.get('username')
+    if not username:
+        return jsonify({'error': 'No username provided'}), 400
+
+    current_countries = user_read(username)
+    all_countries = get_all_country_names()
+    available_countries = [c for c in all_countries if c not in current_countries]
+
+    return jsonify({
+        'current_countries': current_countries,
+        'available_countries': available_countries
+    })
+
+
+
 @app.route('/user-read', methods=['GET', 'POST'])
 def user_read_route():
     users = get_all_users()
@@ -69,27 +87,16 @@ def user_read_route():
 @app.route('/update-user', methods=['GET', 'POST'])
 def update_user():
     users = get_all_users()
-    all_countries = get_all_country_names()
 
     if request.method == 'POST':
         username = request.form['username']
-        selected_new = request.form.getlist('newCountries')
-        update_user_countries(username, selected_new)
+        updated_list = request.form.getlist('updatedCountries')  # full updated list from frontend
+        table.put_item(Item={'User': username, 'CountriesVisited': updated_list})
         flash('User countries updated!', 'success')
-        return redirect(url_for('home'))
+        return redirect(url_for('update_user'))
 
-    # If it's a GET request with a user selected (via query param), load their current countries
-    selected_user = request.args.get('username')
-    current_countries = user_read(selected_user) if selected_user else []
+    return render_template('update_user.html', users=users)
 
-    # Filter out current countries to avoid duplicate selections
-    available_countries = [c for c in all_countries if c not in current_countries]
-
-    return render_template('update_user.html',
-                           users=users,
-                           selected_user=selected_user,
-                           current_countries=current_countries,
-                           available_countries=available_countries)
 
 
 if __name__ == '__main__': #Came from the examples so prob important

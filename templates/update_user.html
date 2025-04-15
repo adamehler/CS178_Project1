@@ -7,59 +7,64 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        select {
-            width: 300px;
-        }
+        body { font-family: Arial, sans-serif; }
+        select { width: 300px; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
-    <h1>Update Countries for a User</h1>
+    <h1>Update User's Visited Countries</h1>
 
-    <!-- Step 1: Select user -->
-    <form method="GET" action="{{ url_for('update_user') }}">
-        <label for="username">Select User:</label><br>
-        <select name="username" id="username" onchange="this.form.submit()">
-            <option value="">-- Choose a user --</option>
-            {% for user in users %}
-                <option value="{{ user }}" {% if user == selected_user %}selected{% endif %}>{{ user }}</option>
-            {% endfor %}
-        </select>
-    </form>
+    <!-- User selection -->
+    <label for="username">Select User:</label><br>
+    <select id="username" name="username">
+        <option value="">-- Choose a user --</option>
+        {% for user in users %}
+        <option value="{{ user }}">{{ user }}</option>
+        {% endfor %}
+    </select><br><br>
 
-    {% if selected_user %}
-    <hr>
-    <h2>Current Countries for {{ selected_user }}:</h2>
-    {% if current_countries %}
-        <ul>
-            {% for c in current_countries %}
-            <li>{{ c }}</li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No countries visited yet.</p>
-    {% endif %}
+    <!-- Dynamic update form -->
+    <div id="update-section" class="hidden">
+        <form id="update-form" method="POST" action="{{ url_for('update_user') }}">
+            <input type="hidden" name="username" id="form-username">
+            
+            <label for="updatedCountries">Modify Visited Countries:</label><br>
+            <select id="updatedCountries" name="updatedCountries" multiple required>
+                <!-- Filled dynamically via AJAX -->
+            </select><br><br>
 
-    <!-- Step 2: Add new countries -->
-    <form method="POST">
-        <input type="hidden" name="username" value="{{ selected_user }}">
-        <label for="newCountries">Add Countries:</label><br>
-        <select id="newCountries" name="newCountries" multiple required>
-            {% for country in available_countries %}
-            <option value="{{ country }}">{{ country }}</option>
-            {% endfor %}
-        </select><br><br>
-        <input type="submit" value="Update Countries">
-    </form>
+            <input type="submit" value="Save Changes">
+        </form>
+    </div>
 
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('#username').select2({ placeholder: "Select user..." });
-            $('#newCountries').select2({ placeholder: "Select countries to add..." });
+            $('#updatedCountries').select2({ placeholder: "Add or remove countries..." });
+
+            $('#username').on('change', function () {
+                const username = $(this).val();
+                if (!username) return;
+
+                $.post("/get-user-countries", { username: username }, function (data) {
+                    const updated = $('#updatedCountries');
+                    updated.empty();
+
+                    const combined = [...data.current_countries, ...data.available_countries];
+                    combined.sort();
+
+                    for (let country of combined) {
+                        const selected = data.current_countries.includes(country) ? 'selected' : '';
+                        updated.append(`<option value="${country}" ${selected}>${country}</option>`);
+                    }
+
+                    $('#form-username').val(username);
+                    $('#update-section').removeClass('hidden');
+                    updated.trigger('change');
+                });
+            });
         });
     </script>
-    {% endif %}
 </body>
 </html>
