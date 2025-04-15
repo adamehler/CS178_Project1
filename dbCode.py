@@ -57,3 +57,12 @@ def user_delete(name):
                 )
     except Exception as e:
         print("error in deleting user", {str(e)})
+
+def user_read(name):
+    country_visit = []
+    response = table.scan()
+    for user in response["Items"]:
+        if name == user["User"]:
+            country_visit = user.get("CountriesVisited", [])
+    return country_visit
+

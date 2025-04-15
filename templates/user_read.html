@@ -1,0 +1,11 @@
+<h2>Cities in Countries Visited by {{ username }}</h2>
+
+{% if cities %}
+<ul>
+    {% for city in cities %}
+        <li>{{ city.Name }} - {{ city.CountryCode }}</li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No cities found.</p>
+{% endif %}

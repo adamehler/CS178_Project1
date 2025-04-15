@@ -47,12 +47,26 @@ def delete_user():
         return render_template('delete_user.html')
 
 
-@app.route('/display-users')
-def display_users():
-    # hard code a value to the users_list;
-    # note that this could have been a result from an SQL query :) 
-    users_list = (('John','Doe','Comedy'),('Jane', 'Doe','Drama'))
-    return render_template('display_users.html', users = users_list)
+@app.route('/user_read', methods=['GET', 'POST']) #From CHATGPT
+def visited_cities():
+    if request.method == 'POST':
+        username = request.form['username']
+        countries = user_read(username)
+
+        if not countries:
+            flash(f"No countries found for user '{username}'", 'danger')
+            return redirect(url_for('home'))
+
+        # Build SQL query
+        placeholders = ','.join(['%s'] * len(countries)) #Chat GPTs solution to getting list of countries
+        query = f"SELECT * FROM city WHERE CountryCode IN (SELECT Code FROM country WHERE Name IN ({placeholders}))"
+        
+        # Execute query
+        results = execute_query(query, countries)
+
+        return render_template('user_read.html', username=username, cities=results)
+
+    return render_template('get_user.html')  # This will have the form to enter username
 
 
 if __name__ == '__main__': #Came from the examples so prob important
