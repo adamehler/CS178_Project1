@@ -68,26 +68,37 @@ def get_user_countries():
 
 @app.route('/user-read', methods=['GET', 'POST'])
 def user_read_route():
-    users = get_all_users()
+    users = get_all_users()  # Get the list of users
+
     if request.method == 'POST':
-        username = request.form['username']
-        countries = user_read(username)
+        username = request.form['username']  # Get the username from the form
+        countries = user_read(username)  # Get countries for the selected user
 
         if not countries:
             flash(f"No countries found for user '{username}'", 'danger')
-            return redirect(url_for('user_read_route'))
+            return redirect(url_for('user_read_route'))  # Redirect if no countries are found
 
-        placeholders = ', '.join(['%s'] * len(countries))
+        placeholders = ', '.join(['%s'] * len(countries))  # Prepare placeholders for SQL query
         query = f"""
-            SELECT city.Name, city.CountryCode 
+            SELECT city.Name AS city_name, 
+                   country.Name as country_name,
+                   city.Population AS population,
+                   city.District AS district,
+                   GROUP_CONCAT(countrylanguage.Language) AS languages
             FROM city 
             JOIN country ON city.CountryCode = country.Code 
+            LEFT JOIN countrylanguage ON country.Code = countrylanguage.CountryCode
             WHERE country.Name IN ({placeholders})
+            GROUP BY city.Name, city.CountryCode, city.Population, city.District
+            ORDER BY city.Population DESC
         """
-        cities = execute_query(query, countries)
-        return render_template('user_read.html', username=username, cities=cities)
-    
+        cities = execute_query(query, countries)  # Execute the query
+
+        return render_template('user_read.html', username=username, cities=cities)  # Render cities page
+
+    # If the method is GET, render the user selection page
     return render_template('get_user.html', users=users)
+
 
 @app.route('/update-user', methods=['GET', 'POST'])
 def update_user():
