@@ -1,10 +1,40 @@
-<form method="POST">
-    <label for="username">Select Username:</label>
-    <select id="username" name="username" required>
-        {% for user in users %}
-        <option value="{{ user }}">{{ user }}</option>
-        {% endfor %}
-    </select>
-    <button type="submit">Submit</button>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>View Visited Countries</title>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #username {
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <h1>View Cities Based on User's Visited Countries</h1>
+    <form method="POST">
+        <label for="username">Select User:</label><br>
+        <select id="username" name="username" required>
+            {% for user in users %}
+            <option value="{{ user }}">{{ user }}</option>
+            {% endfor %}
+        </select><br><br>
+        <button type="submit">Show Cities</button>
+    </form>
+
+    <script>
+        $(document).ready(function() {
+            $('#username').select2({
+                placeholder: "Select a user...",
+                allowClear: true
+            });
+        });
+    </script>
+</body>
+</html>
 
