@@ -37,11 +37,15 @@ def get_most_pop_off_lang():
     return execute_query(query)
 
 def user_add(name, countries):
+    # Assume countries is already a list from the form
     table.put_item(
         Item={
-        'User': name,
-        'CountriesVisited': countries
-    })
+            'User': name,
+            'CountriesVisited': countries
+        }
+    )
+
+
 
 
 def user_delete(name):
@@ -55,14 +59,25 @@ def user_delete(name):
                 'User': name
                 }
                 )
-    except Exception as e:
+    except Exception as e: #Try catch
         print("error in deleting user", {str(e)})
+
+def get_all_users(): #Helper function
+    response = table.scan()
+    return sorted([user["User"] for user in response["Items"]])
+
 
 def user_read(name):
     country_visit = []
     response = table.scan()
     for user in response["Items"]:
         if name == user["User"]:
-            country_visit = user.get("CountriesVisited", [])
+            raw_countries = user.get("CountriesVisited", []) #Added from chatGPT
+            country_visit = raw_countries if isinstance(raw_countries, list) else []
     return country_visit
+
+def get_all_country_names():
+    query = "SELECT Name FROM country ORDER BY Name"
+    results = execute_query(query)
+    return [row['Name'] for row in results]
 

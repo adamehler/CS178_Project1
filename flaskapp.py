@@ -18,55 +18,53 @@ def home():
 
 @app.route('/add-user', methods=['GET', 'POST'])
 def add_user():
+    countries = get_all_country_names()
+    
     if request.method == 'POST':
-        # Extract form data
         username = request.form['username']
-        countriesVisited = request.form['countriesVisited']
-        user_add(username, countriesVisited) #use dbCode add to add to NoSQL
-
-        
-        # Process the data (e.g., add it to a database)
-        flash('User added successfully!', 'success')  # 'success' is a category; makes a green banner at the top
-        # Redirect to home page or another page upon successful submission
+        selected_countries = request.form.getlist('countriesVisited')  # get multiple selected options
+        user_add(username, selected_countries)
+        flash('User added successfully!', 'success')
         return redirect(url_for('home'))
-    else:
-        # Render the form page if the request method is GET
-        return render_template('add_user.html')
+    
+    return render_template('add_user.html', countries=countries)
 
-@app.route('/delete-user',methods=['GET', 'POST'])
+
+
+@app.route('/delete-user', methods=['GET', 'POST'])
 def delete_user():
+    users = get_all_users()
     if request.method == 'POST':
-        # Extract form data
         name = request.form['name']
         user_delete(name)
-        flash('User deleted successfully!', 'warning')  # 'success' is a category; makes a green banner at the top
-        # Redirect to home page or another page upon successful submission
+        flash('User deleted successfully!', 'warning')
         return redirect(url_for('home'))
     else:
-        # Render the form page if the request method is GET
-        return render_template('delete_user.html')
+        return render_template('delete_user.html', users=users)
 
 
-@app.route('/user_read', methods=['GET', 'POST']) #From CHATGPT
-def visited_cities():
+@app.route('/user-read', methods=['GET', 'POST'])
+def user_read_route():
+    users = get_all_users()
     if request.method == 'POST':
         username = request.form['username']
         countries = user_read(username)
 
         if not countries:
             flash(f"No countries found for user '{username}'", 'danger')
-            return redirect(url_for('home'))
+            return redirect(url_for('user_read_route'))
 
-        # Build SQL query
-        placeholders = ','.join(['%s'] * len(countries)) #Chat GPTs solution to getting list of countries
-        query = f"SELECT * FROM city WHERE CountryCode IN (SELECT Code FROM country WHERE Name IN ({placeholders}))"
-        
-        # Execute query
-        results = execute_query(query, countries)
-
-        return render_template('user_read.html', username=username, cities=results)
-
-    return render_template('get_user.html')  # This will have the form to enter username
+        placeholders = ', '.join(['%s'] * len(countries))
+        query = f"""
+            SELECT city.Name, city.CountryCode 
+            FROM city 
+            JOIN country ON city.CountryCode = country.Code 
+            WHERE country.Name IN ({placeholders})
+        """
+        cities = execute_query(query, countries)
+        return render_template('user_read.html', username=username, cities=cities)
+    
+    return render_template('get_user.html', users=users)
 
 
 if __name__ == '__main__': #Came from the examples so prob important

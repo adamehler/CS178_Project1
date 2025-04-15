@@ -1,5 +1,10 @@
 <form method="POST">
-    <label for="username">Enter Username:</label>
-    <input type="text" id="username" name="username" required>
+    <label for="username">Select Username:</label>
+    <select id="username" name="username" required>
+        {% for user in users %}
+        <option value="{{ user }}">{{ user }}</option>
+        {% endfor %}
+    </select>
     <button type="submit">Submit</button>
 </form>
+

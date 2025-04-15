@@ -6,11 +6,18 @@
 <body>
     <h1>Add New User</h1>
     <form action="{{ url_for('add_user') }}" method="post">
-        <label for="name">Username:</label><br>
+        <label for="username">Username:</label><br>
         <input type="text" id="username" name="username" required><br>
-        <label for="name">Countries Visited:</label><br>
-        <input type="text" id="countriesVisited" name="countriesVisited" required><br>
+
+        <label for="countriesVisited">Select Countries Visited:</label><br>
+        <select id="countriesVisited" name="countriesVisited" multiple required>
+            {% for country in countries %}
+            <option value="{{ country }}">{{ country }}</option>
+            {% endfor %}
+        </select><br>
+
         <input type="submit" value="Submit">
     </form>
+    <p>Hold Ctrl (or Cmd) to select multiple countries.</p>
 </body>
 </html>
