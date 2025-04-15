@@ -90,12 +90,12 @@ def update_user():
 
     if request.method == 'POST':
         username = request.form['username']
-        updated_list = request.form.getlist('updatedCountries')  # full updated list from frontend
+        updated_list = request.form.getlist('updatedCountries')
         table.put_item(Item={'User': username, 'CountriesVisited': updated_list})
-        flash('User countries updated!', 'success')
-        return redirect(url_for('update_user'))
+        return render_template('update_user.html', users=users, success=True)
 
     return render_template('update_user.html', users=users)
+
 
 
 

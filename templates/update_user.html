@@ -1,70 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Update User Countries</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <!-- jQuery + Select2 JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <style>
-        body { font-family: Arial, sans-serif; }
-        select { width: 300px; }
-        .hidden { display: none; }
+        #updatedCountries {
+            width: 100%;
+        }
     </style>
 </head>
-<body>
-    <h1>Update User's Visited Countries</h1>
+<body class="bg-light">
 
-    <!-- User selection -->
-    <label for="username">Select User:</label><br>
-    <select id="username" name="username">
-        <option value="">-- Choose a user --</option>
-        {% for user in users %}
-        <option value="{{ user }}">{{ user }}</option>
-        {% endfor %}
-    </select><br><br>
+<div class="container py-5">
+    <h1 class="mb-4">Update User's Visited Countries</h1>
+        {% if success %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="success-alert">
+        ✅ User's countries were updated successfully!
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endif %}
 
-    <!-- Dynamic update form -->
-    <div id="update-section" class="hidden">
-        <form id="update-form" method="POST" action="{{ url_for('update_user') }}">
-            <input type="hidden" name="username" id="form-username">
-            
-            <label for="updatedCountries">Modify Visited Countries:</label><br>
-            <select id="updatedCountries" name="updatedCountries" multiple required>
-                <!-- Filled dynamically via AJAX -->
-            </select><br><br>
-
-            <input type="submit" value="Save Changes">
-        </form>
+    <!-- Select User Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form id="user-select-form">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Select User</label>
+                    <select id="username" class="form-select" required>
+                        <option value="">-- Choose a user --</option>
+                        {% for user in users %}
+                        <option value="{{ user }}">{{ user }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <script>
-        $(document).ready(function () {
-            $('#username').select2({ placeholder: "Select user..." });
-            $('#updatedCountries').select2({ placeholder: "Add or remove countries..." });
+    <!-- Update Countries Card -->
+    <div class="card shadow-sm mb-4 d-none" id="update-section">
+        <div class="card-body">
+            <h5 class="card-title">Modify Visited Countries</h5>
+            <form id="update-form" method="POST" action="{{ url_for('update_user') }}">
+                <input type="hidden" name="username" id="form-username">
 
-            $('#username').on('change', function () {
-                const username = $(this).val();
-                if (!username) return;
+                <div class="mb-3">
+                    <label for="updatedCountries" class="form-label">Visited Countries</label>
+                    <select id="updatedCountries" name="updatedCountries" class="form-select" multiple required>
+                        <!-- Options loaded via AJAX -->
+                    </select>
+                    <div class="form-text">Use Ctrl (Cmd on Mac) or click to select multiple.</div>
+                </div>
 
-                $.post("/get-user-countries", { username: username }, function (data) {
-                    const updated = $('#updatedCountries');
-                    updated.empty();
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </form>
+        </div>
+    </div>
+</div>
 
-                    const combined = [...data.current_countries, ...data.available_countries];
-                    combined.sort();
+<script>
+    $(document).ready(function () {
+        $('#username').select2({ placeholder: "Select user...", width: '100%' });
+        $('#updatedCountries').select2({ placeholder: "Add or remove countries...", width: '100%' });
 
-                    for (let country of combined) {
-                        const selected = data.current_countries.includes(country) ? 'selected' : '';
-                        updated.append(`<option value="${country}" ${selected}>${country}</option>`);
-                    }
+        $('#username').on('change', function () {
+            const username = $(this).val();
+            if (!username) return;
 
-                    $('#form-username').val(username);
-                    $('#update-section').removeClass('hidden');
-                    updated.trigger('change');
-                });
+            $.post("/get-user-countries", { username: username }, function (data) {
+                const updated = $('#updatedCountries');
+                updated.empty();
+
+                const combined = [...data.current_countries, ...data.available_countries];
+                combined.sort();
+
+                for (let country of combined) {
+                    const selected = data.current_countries.includes(country) ? 'selected' : '';
+                    updated.append(`<option value="${country}" ${selected}>${country}</option>`);
+                }
+
+                $('#form-username').val(username);
+                $('#update-section').removeClass('d-none');
+                updated.trigger('change');
             });
         });
-    </script>
+    });
+</script>
+
+<!-- Bootstrap JS (optional for dropdowns, modals, etc.) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
