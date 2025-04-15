@@ -109,7 +109,8 @@ def update_user():
         username = request.form['username']
         updated_list = request.form.getlist('updatedCountries')
         table.put_item(Item={'User': username, 'CountriesVisited': updated_list})
-        return render_template('update_user.html', users=users, success=True)
+        flash('User updated successfully!', 'success')
+        return redirect(url_for('home')) #redirect to home
 
     return render_template('update_user.html', users=users)
 
