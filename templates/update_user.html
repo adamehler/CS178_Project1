@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Update User Countries</title>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        select {
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Update Countries for a User</h1>
+
+    <!-- Step 1: Select user -->
+    <form method="GET" action="{{ url_for('update_user') }}">
+        <label for="username">Select User:</label><br>
+        <select name="username" id="username" onchange="this.form.submit()">
+            <option value="">-- Choose a user --</option>
+            {% for user in users %}
+                <option value="{{ user }}" {% if user == selected_user %}selected{% endif %}>{{ user }}</option>
+            {% endfor %}
+        </select>
+    </form>
+
+    {% if selected_user %}
+    <hr>
+    <h2>Current Countries for {{ selected_user }}:</h2>
+    {% if current_countries %}
+        <ul>
+            {% for c in current_countries %}
+            <li>{{ c }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No countries visited yet.</p>
+    {% endif %}
+
+    <!-- Step 2: Add new countries -->
+    <form method="POST">
+        <input type="hidden" name="username" value="{{ selected_user }}">
+        <label for="newCountries">Add Countries:</label><br>
+        <select id="newCountries" name="newCountries" multiple required>
+            {% for country in available_countries %}
+            <option value="{{ country }}">{{ country }}</option>
+            {% endfor %}
+        </select><br><br>
+        <input type="submit" value="Update Countries">
+    </form>
+
+    <script>
+        $(document).ready(function() {
+            $('#username').select2({ placeholder: "Select user..." });
+            $('#newCountries').select2({ placeholder: "Select countries to add..." });
+        });
+    </script>
+    {% endif %}
+</body>
+</html>

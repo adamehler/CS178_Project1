@@ -66,6 +66,31 @@ def user_read_route():
     
     return render_template('get_user.html', users=users)
 
+@app.route('/update-user', methods=['GET', 'POST'])
+def update_user():
+    users = get_all_users()
+    all_countries = get_all_country_names()
+
+    if request.method == 'POST':
+        username = request.form['username']
+        selected_new = request.form.getlist('newCountries')
+        update_user_countries(username, selected_new)
+        flash('User countries updated!', 'success')
+        return redirect(url_for('home'))
+
+    # If it's a GET request with a user selected (via query param), load their current countries
+    selected_user = request.args.get('username')
+    current_countries = user_read(selected_user) if selected_user else []
+
+    # Filter out current countries to avoid duplicate selections
+    available_countries = [c for c in all_countries if c not in current_countries]
+
+    return render_template('update_user.html',
+                           users=users,
+                           selected_user=selected_user,
+                           current_countries=current_countries,
+                           available_countries=available_countries)
+
 
 if __name__ == '__main__': #Came from the examples so prob important
     app.run(host='0.0.0.0', port=8080, debug=True)

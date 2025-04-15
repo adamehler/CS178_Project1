@@ -66,6 +66,17 @@ def get_all_users(): #Helper function
     response = table.scan()
     return sorted([user["User"] for user in response["Items"]])
 
+def update_user_countries(name, new_countries):
+    current = user_read(name)
+    # Combine and remove duplicates
+    updated = list(set(current + new_countries))
+    table.put_item(
+        Item={
+            'User': name,
+            'CountriesVisited': updated
+        }
+    )
+
 
 def user_read(name):
     country_visit = []
