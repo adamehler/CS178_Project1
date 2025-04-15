@@ -12,6 +12,11 @@ app.secret_key = 'your_secret_key' #This came from the example flaskapp.py in cl
 
 @app.route("/")
 def home():
+    return render_template("home.html")
+
+
+@app.route("/languages")
+def languages():
     #Get the top 20 most common official languages
     languages = get_most_pop_off_lang()
     #Utilize the template to render the page
