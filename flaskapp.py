@@ -81,16 +81,17 @@ def user_read_route():
         placeholders = ', '.join(['%s'] * len(countries))  # Prepare placeholders for SQL query
         query = f"""
             SELECT city.Name AS city_name, 
-                   country.Name as country_name,
-                   city.Population AS population,
-                   city.District AS district,
-                   GROUP_CONCAT(countrylanguage.Language) AS languages
-            FROM city 
-            JOIN country ON city.CountryCode = country.Code 
-            LEFT JOIN countrylanguage ON country.Code = countrylanguage.CountryCode
-            WHERE country.Name IN ({placeholders})
-            GROUP BY city.Name, city.CountryCode, city.Population, city.District
-            ORDER BY city.Population DESC
+             city.CountryCode AS country_code, 
+             city.Population AS population,
+             city.District AS district,
+             country.Name AS country_name,
+             GROUP_CONCAT(countrylanguage.Language) AS languages
+             FROM city 
+             JOIN country ON city.CountryCode = country.Code 
+             LEFT JOIN countrylanguage ON country.Code = countrylanguage.CountryCode
+             WHERE country.Name IN ({placeholders})
+             GROUP BY city.Name, city.CountryCode, city.Population, city.District, country.Name
+
         """
         cities = execute_query(query, countries)  # Execute the query
 
