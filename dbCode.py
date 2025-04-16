@@ -20,7 +20,7 @@ def get_conn():
         cursorclass=pymysql.cursors.DictCursor
     )
 
-def execute_query(query, args=()):
+def execute_query(query, args=()): # allows for execution of SQL in all functions
     #Execute SQL query with RDS connection and close connection after, return as dict
     conn = get_conn()
     try:
@@ -51,10 +51,10 @@ def user_add(name, countries):
 def user_delete(name):
     try:
         response = table.get_item(Key={"User": name})
-        if 'Item' not in response:
+        if 'Item' not in response: #Check to ensure user is in, should be due to list
             print("This user is not in the database.")
         else:
-            table.delete_item(
+            table.delete_item( #if in, remove the user from table
                 Key={
                 'User': name
                 }
@@ -81,11 +81,11 @@ def update_user_countries(name, new_countries):
 def user_read(name): # take a username from the list, create a list of countries that they have visited
     country_visit = []
     response = table.scan()
-    for user in response["Items"]:
+    for user in response["Items"]: #if user is in database, get the list of countries
         if name == user["User"]:
             raw_countries = user.get("CountriesVisited", []) #Added from chatGPT
-            country_visit = raw_countries if isinstance(raw_countries, list) else []
-    return country_visit
+            country_visit = raw_countries if isinstance(raw_countries, list) else [] #if empty return empty list
+    return country_visit #return the list, if empty or not a valid user, will be empty
 
 def get_all_country_names(): #used for allowing the lists to select are populated on webpage
     query = "SELECT Name FROM country ORDER BY Name"

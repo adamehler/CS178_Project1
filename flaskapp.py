@@ -10,31 +10,31 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key' #This came from the example flaskapp.py in class
 #Home page
 
-@app.route("/")
+@app.route("/") #contains buttons to CRUD features
 def home():
     return render_template("home.html")
 
 
 @app.route("/languages")
-def languages():
+def languages(): #This was the initial test for checkpoint purposes and validate connection
     #Get the top 20 most common official languages
     languages = get_most_pop_off_lang()
     #Utilize the template to render the page
     return render_template("official_languages.html", results=languages)
 
 @app.route('/add-user', methods=['GET', 'POST'])
-def add_user():
+def add_user(): #allows addition of user to database and add countries to user
     countries = get_all_country_names()
     
     if request.method == 'POST':
         username = request.form['username']
         selected_countries = request.form.getlist('countriesVisited')  # get multiple selected options
         existing_users = get_all_users()
-        if username in existing_users:
+        if username in existing_users: #prevent duplicates
             flash('User already exists', 'warning')
             return redirect(url_for('add_user'))
         user_add(username, selected_countries)
-        flash('User added successfully!', 'success')
+        flash('User added successfully!', 'success') #flash success and return to home page
         return redirect(url_for('home'))
     
     return render_template('add_user.html', countries=countries)
@@ -42,8 +42,8 @@ def add_user():
 
 
 @app.route('/delete-user', methods=['GET', 'POST'])
-def delete_user():
-    users = get_all_users()
+def delete_user(): #allows for deletion from populated list of users
+    users = get_all_users() #calls dbCode function to return user list
     if request.method == 'POST':
         name = request.form['name']
         user_delete(name)
