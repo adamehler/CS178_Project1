@@ -53,17 +53,17 @@ def delete_user():
         return render_template('delete_user.html', users=users)
 
 
-@app.route('/get-user-countries', methods=['POST'])
-def get_user_countries():
+@app.route('/get-user-countries', methods=['POST']) #Called in update_user.html
+def get_user_countries(): #auto populates the list of countries to add/remove
     username = request.form.get('username')
     if not username:
         return jsonify({'error': 'No username provided'}), 400
-
+    
     current_countries = user_read(username)
     all_countries = get_all_country_names()
-    available_countries = [c for c in all_countries if c not in current_countries]
+    available_countries = [c for c in all_countries if c not in current_countries] #allows user to add any countries not already added
 
-    return jsonify({
+    return jsonify({ #Return the information to the .html
         'current_countries': current_countries,
         'available_countries': available_countries
     })
@@ -83,18 +83,20 @@ def user_read_route():
             return redirect(url_for('user_read_route'))  # Redirect if no countries are found
 
         placeholders = ', '.join(['%s'] * len(countries))  # Prepare placeholders for SQL query
+        #The main query to return the sorted list of cities in the countries visited
         query = f"""
             SELECT city.Name AS city_name, 
              city.CountryCode AS country_code, 
              city.Population AS population,
              city.District AS district,
              country.Name AS country_name,
-             GROUP_CONCAT(countrylanguage.Language) AS languages
+             GROUP_CONCAT(countrylanguage.Language SEPARATOR ', ') AS languages
              FROM city 
              JOIN country ON city.CountryCode = country.Code 
              LEFT JOIN countrylanguage ON country.Code = countrylanguage.CountryCode
              WHERE country.Name IN ({placeholders})
              GROUP BY city.Name, city.CountryCode, city.Population, city.District, country.Name
+             ORDER BY city.Population DESC
 
         """
         cities = execute_query(query, countries)  # Execute the query
@@ -107,10 +109,10 @@ def user_read_route():
 
 @app.route('/update-user', methods=['GET', 'POST'])
 def update_user():
-    users = get_all_users()
+    users = get_all_users() # get a list that restricts to that list to update users
 
     if request.method == 'POST':
-        username = request.form['username']
+        username = request.form['username'] #take a user, get updated list and input new list
         updated_list = request.form.getlist('updatedCountries')
         table.put_item(Item={'User': username, 'CountriesVisited': updated_list})
         flash('User updated successfully!', 'success')

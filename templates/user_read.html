@@ -28,7 +28,7 @@
                     <tr>
                         <td>{{ city.city_name }}</td>
                         <td>{{ city.country_name }}</td>
-                        <td>{{ city.population }}</td>
+                        <td>{{ '{:,}'.format(city.population) }}</td>
                         <td>{{ city.district }}</td>
                         <td>{{ city.languages }}</td>
                     </tr>
