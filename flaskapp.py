@@ -29,6 +29,10 @@ def add_user():
     if request.method == 'POST':
         username = request.form['username']
         selected_countries = request.form.getlist('countriesVisited')  # get multiple selected options
+        existing_users = get_all_users()
+        if username in existing_users:
+            flash('User already exists', 'warning')
+            return redirect(url_for('add_user'))
         user_add(username, selected_countries)
         flash('User added successfully!', 'success')
         return redirect(url_for('home'))
