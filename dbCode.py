@@ -62,7 +62,7 @@ def user_delete(name):
     except Exception as e: #Try catch
         print("error in deleting user", {str(e)})
 
-def get_all_users(): #Helper function
+def get_all_users(): #Helper function for lists and to ensure no duplication
     response = table.scan()
     return sorted([user["User"] for user in response["Items"]])
 
@@ -70,7 +70,7 @@ def update_user_countries(name, new_countries):
     current = user_read(name)
     # Combine and remove duplicates
     updated = list(set(current + new_countries))
-    table.put_item(
+    table.put_item( #input the updated countries to the list
         Item={
             'User': name,
             'CountriesVisited': updated
@@ -78,7 +78,7 @@ def update_user_countries(name, new_countries):
     )
 
 
-def user_read(name):
+def user_read(name): # take a username from the list, create a list of countries that they have visited
     country_visit = []
     response = table.scan()
     for user in response["Items"]:
@@ -87,7 +87,7 @@ def user_read(name):
             country_visit = raw_countries if isinstance(raw_countries, list) else []
     return country_visit
 
-def get_all_country_names():
+def get_all_country_names(): #used for allowing the lists to select are populated on webpage
     query = "SELECT Name FROM country ORDER BY Name"
     results = execute_query(query)
     return [row['Name'] for row in results]
