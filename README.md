@@ -21,4 +21,4 @@ This project required the use of an AWS EC2 instance, a DynamoDB table, and an R
 * Boto3
 * pymysql
 
-Once the above are setup and credentials are correctly set, the web page can be created by running 'flaskapp.py'
+Once the above are setup and credentials are correctly set, the web page can be created by running `python3 flaskapp.py`
