@@ -3,8 +3,7 @@
 This project is intended to demonstrate the ability to host a flaskapp webpage that integrates data from RDS and a DynamoDB table. It was created to showcase basic understanding of setting up a flask application and CRUD operations.
 
 ## Description
-This project utilizes a flask web application to host a web page that allows users to automatically access and mutate data within a DynamoDB table.
-The data returned from DynamoDB is then joined with a database from an RDS instance using SQL.
+This project utilizes a flask web application to host a web page that allows users to automatically access and mutate data within a DynamoDB table. The user can create, modify, and delete entries. The data returned from DynamoDB is then joined with a database from an RDS instance using SQL.
 
 ### Features of application
 * Create, Read, Update, Delete user information
@@ -16,7 +15,7 @@ The data returned from DynamoDB is then joined with a database from an RDS insta
 This project utilizes a world dataset which contains three tables: city, country, countrylanguage
 
 ### Tools necessary
-This project required the use of an AWS EC2 instance, a DynamoDB table, and an RDS instance.
+This project required the use of an AWS EC2 instance, a DynamoDB table, and an RDS instance. The RDS instance must be accessible to permit the uploading of the tables and retrieval of information. This requires proper configuration of credentials which should be housed in a `creds.py` file.
 
 ### Required packages
 * Flask
