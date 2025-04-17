@@ -12,6 +12,8 @@ The information gleamed from DynamoDB is then joined with a database from an RDS
 * Protected against free, potentially erroneous inputs
 * Able to view list of cities and characteristics thereof for users
 
+### Data Used
+This project utilizes a world dataset which contains three tables: city, country, countrylanguage
 
 ### Tools necessary
 This project required the use of an AWS EC2 instance, a DynamoDB table, and an RDS instance.
